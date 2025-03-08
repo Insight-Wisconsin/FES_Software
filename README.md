@@ -6,7 +6,7 @@ Insight Wisconsin's FES R&amp;D team Android Studio files
 https://git-scm.com/downloads (Select your OS and then download at the top of the page)
  
 **Android Studio:** Android app development  
-https://developer.android.com/studio (Select ladybug feature drop)
+https://developer.android.com/studio (Select Meerkat feature drop)
 
 (OPTIONAL)  
 **WSL:** Linux command line on Windows  
