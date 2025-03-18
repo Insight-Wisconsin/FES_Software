@@ -10,6 +10,34 @@
 
     <LinearLayout
         android:layout_width="match_parent"
+        android:layout_height="91dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10sp"
+            android:text="Height"
+            android:textSize="20sp" />
+
+        <EditText
+            android:id="@+id/Height"
+            android:layout_width="201dp"
+            android:layout_height="69dp"
+            android:layout_margin="10sp"
+            android:hint="Enter Text Here" />
+
+        <Button
+            android:id="@+id/HeightButton"
+            android:layout_width="95dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Click Here" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
@@ -17,78 +45,70 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10sp"
-            android:text="Enter Text: "
+            android:text="Weight"
             android:textSize="20sp" />
 
         <EditText
-            android:id="@+id/editText1"
-            android:layout_width="276dp"
-            android:layout_height="57dp"
+            android:id="@+id/Weight"
+            android:layout_width="198dp"
+            android:layout_height="67dp"
             android:layout_margin="10sp"
             android:hint="Enter Text Here" />
 
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="horizontal">
-
         <Button
-            android:id="@+id/button1"
-            android:layout_width="wrap_content"
+            android:id="@+id/WeightButton"
+            android:layout_width="95dp"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="Click Here" />
 
     </LinearLayout>
 
-
-    <com.google.android.material.textfield.TextInputLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="214dp">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
-        <Space
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_margin="10sp"
+            android:text="Current Height"
+            android:textSize="20sp" />
 
-        <Space
+        <TextView
+            android:id="@+id/textViewHeight"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
-    </com.google.android.material.textfield.TextInputLayout>
+            android:layout_margin="10sp"
+            android:layout_weight="1"
+            android:text="-"
+            android:textSize="20sp" />
 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="match_parent"
-        android:layout_height="123dp"
-        android:text="TextView"
-        android:layout_centerHorizontal="true"
-        android:gravity="center"
-        android:textSize="40dp"
-        />
+    </LinearLayout>
 
-    <Space
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10sp"
+            android:text="Current Weight"
+            android:textSize="20sp" />
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/textViewWeight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10sp"
+            android:layout_weight="1"
+            android:text="-"
+            android:textSize="20sp" />
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+    </LinearLayout>
 
 
 </LinearLayout>

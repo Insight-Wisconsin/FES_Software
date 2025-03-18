@@ -6,11 +6,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 import android.widget.TextView;
-import androidx.activity.EdgeToEdge;
+
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -18,15 +15,26 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        TextView GyroNumber = (TextView) findViewById(R.id.textView2);
-
-        Button button = findViewById(R.id.button1);
-        EditText editText1 = findViewById(R.id.editText1);
-        button.setOnClickListener(new View.OnClickListener(){
+        TextView HeightNumber = (TextView) findViewById(R.id.textViewHeight);
+        TextView WeightNumber = (TextView) findViewById(R.id.textViewWeight);
+        Button Heightbutton = findViewById(R.id.HeightButton);
+        Button Weightbutton = findViewById(R.id.WeightButton);
+        EditText HeighteditText = findViewById(R.id.Height);
+        EditText WeighteditText = findViewById(R.id.Weight);
+        Heightbutton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v){
-                String text = editText1.getText().toString();
-                GyroNumber.setText(text);
+            public void onClick(View v) {
+                String text = HeighteditText.getText().toString();
+                HeightNumber.setText(text);
+                Toast.makeText(MainActivity.this, text, Toast.LENGTH_SHORT).show();
+
+            }
+        });
+        Weightbutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String text = WeighteditText.getText().toString();
+                WeightNumber.setText(text);
                 Toast.makeText(MainActivity.this, text, Toast.LENGTH_SHORT).show();
 
             }
