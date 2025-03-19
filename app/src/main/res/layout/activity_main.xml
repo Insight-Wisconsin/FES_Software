@@ -10,62 +10,6 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="91dp"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="10sp"
-            android:text="Height"
-            android:textSize="20sp" />
-
-        <EditText
-            android:id="@+id/Height"
-            android:layout_width="201dp"
-            android:layout_height="69dp"
-            android:layout_margin="10sp"
-            android:hint="Enter Text Here" />
-
-        <Button
-            android:id="@+id/HeightButton"
-            android:layout_width="95dp"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="Click Here" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="10sp"
-            android:text="Weight"
-            android:textSize="20sp" />
-
-        <EditText
-            android:id="@+id/Weight"
-            android:layout_width="198dp"
-            android:layout_height="67dp"
-            android:layout_margin="10sp"
-            android:hint="Enter Text Here" />
-
-        <Button
-            android:id="@+id/WeightButton"
-            android:layout_width="95dp"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="Click Here" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
@@ -84,6 +28,13 @@
             android:layout_weight="1"
             android:text="-"
             android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/Edit"
+            android:layout_width="5dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="Settings" />
 
     </LinearLayout>
 
@@ -112,6 +63,29 @@
 
     <LinearLayout
         android:layout_width="match_parent"
+        android:layout_height="149dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="135dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10sp"
+            android:text="Gyro"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/gyroData"
+            android:layout_width="wrap_content"
+            android:layout_height="122dp"
+            android:layout_margin="10sp"
+            android:layout_weight="1"
+            android:text="-"
+            android:textSize="20sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="140dp"
         android:orientation="horizontal">
 
@@ -119,11 +93,57 @@
             android:layout_width="135dp"
             android:layout_height="wrap_content"
             android:layout_margin="10sp"
-            android:text="Current Gyro"
+            android:text="accelerometer"
             android:textSize="20sp" />
 
         <TextView
-            android:id="@+id/gyroData"
+            android:id="@+id/accelerometerData"
+            android:layout_width="wrap_content"
+            android:layout_height="122dp"
+            android:layout_margin="10sp"
+            android:layout_weight="1"
+            android:text="-"
+            android:textSize="20sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="138dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="135dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10sp"
+            android:text="Gyro Graph"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/gyrograph"
+            android:layout_width="wrap_content"
+            android:layout_height="122dp"
+            android:layout_margin="10sp"
+            android:layout_weight="1"
+            android:text="-"
+            android:textSize="20sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="143dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="135dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10sp"
+            android:text="Accelerometer Position"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/AccelerometerPosition"
             android:layout_width="wrap_content"
             android:layout_height="122dp"
             android:layout_margin="10sp"
