@@ -107,8 +107,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
         });
 
-        Button AngleReset = findViewById(R.id.AngleReset);
-
+        Button AngleReset = findViewById(R.id.angleReset);
+        Button ResetAll = findViewById(R.id.resetAll);
         AngleReset.setOnClickListener(new View.OnClickListener(){
          @Override
          public void onClick(View v){
@@ -117,6 +117,20 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 gyroValues[2]=0;
             }
         });
+
+        ResetAll.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                gyroValues[0]=0;
+                gyroValues[1]=0;
+                gyroValues[2]=0;
+
+                accelValues[0]=0;
+                accelValues[1]=0;
+                accelValues[2]=0;
+            }
+        });
+
         onResume();
     }
     @Override
@@ -195,4 +209,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
         // Not needed for basic gyroscope usage
     }
+
+
+
+
 }

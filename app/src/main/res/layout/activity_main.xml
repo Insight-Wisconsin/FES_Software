@@ -59,6 +59,13 @@
             android:text="-"
             android:textSize="20sp" />
 
+        <Button
+            android:id="@+id/resetAll"
+            android:layout_width="70dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Reset All" />
+
     </LinearLayout>
 
     <LinearLayout
@@ -83,7 +90,7 @@
             android:textSize="20sp" />
 
         <Button
-            android:id="@+id/AngleReset"
+            android:id="@+id/angleReset"
             android:layout_width="2dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -159,6 +166,10 @@
             android:textSize="20sp" />
 
     </LinearLayout>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
 
 </LinearLayout>
