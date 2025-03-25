@@ -11,22 +11,17 @@ import android.widget.EditText;
 import android.widget.Toast;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
     private SensorManager sensorManager;
-    private Sensor accelerometer, gyroscope, magnetometer;
-    private TextView accelerometerData, gyroData, orientationData;
+    private Sensor accelerometer, gyroscope;
+    private TextView accelerometerData, gyroData,orientationData;
     private int height,weight;
     private long lastTimestamp = 0;
     private float[] accelValues = new float[3];
-    private float[] magnetValues = new float[3];
     private float[] gyroValues = new float[3];
-
-    private float[] rotationMatrix = new float[9];
-    private float[] orientationAngles = new float[3];
-    private float[] gyroRotation = new float[3]; // Store integrated gyro values
-
-    private float filteredPitch = 0, filteredRoll = 0, filteredYaw = 0;
+    private boolean isForward=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,12 +77,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         gyroData = (TextView) findViewById(R.id.gyroData);
         accelerometerData = (TextView) findViewById(R.id.accelerometerData);
-        orientationData = findViewById(R.id.orientationData);
+        orientationData = (TextView) findViewById(R.id.orientationData);
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
         accelerometer= sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        magnetometer = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 
         Button edit = findViewById(R.id.Edit);
         if (gyroscope == null) {
@@ -96,9 +90,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if(accelerometer==null){
             accelerometerData.setText("Accelerometer not available");
         }
-        if (magnetometer != null) {
-            sensorManager.registerListener(this, magnetometer, SensorManager.SENSOR_DELAY_UI);
-        }
+
 
         edit.setOnClickListener(new View.OnClickListener() {
         @Override
@@ -128,6 +120,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 accelValues[0]=0;
                 accelValues[1]=0;
                 accelValues[2]=0;
+
+                isForward=false;
             }
         });
 
@@ -142,9 +136,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if (accelerometer != null) {
             sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
         }
-        if (accelerometer != null) {
-            sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
-        }
 
 
     }
@@ -152,11 +143,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
             System.arraycopy(event.values, 0, accelValues, 0, event.values.length);
-            updateOrientation();
-        }
-        else if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
-            System.arraycopy(event.values, 0, magnetValues, 0, event.values.length);
-            updateOrientation();
         }
         else if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
             if (lastTimestamp != 0) {
@@ -172,7 +158,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         float gyroX_deg = gyroValues[0] * (180f / (float) Math.PI);
         float gyroY_deg = gyroValues[1] * (180f / (float) Math.PI);
         float gyroZ_deg = gyroValues[2] * (180f / (float) Math.PI);
-
+        sendImpulse(gyroZ_deg,gyroValues[0]);
         String dataG = String.format("X: %.2f°\nY: %.2f°\nZ: %.2f°",
                 gyroX_deg, gyroY_deg, gyroZ_deg);
         gyroData.setText(dataG);
@@ -180,37 +166,26 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         String dataA = String.format("X: %.2f m/s²\nY: %.2f m/s²\nZ: %.2f m/s²",
                 accelValues[0], accelValues[1], accelValues[2]);
         accelerometerData.setText(dataA);
+        String dataB = String.format("X: %.2f rad/s\nY: %.2f rad/s\nZ: %.2f rad/s",
+                gyroValues[0], gyroValues[1], gyroValues[2]);
+        orientationData.setText(dataA);
 
     }
-    private void updateOrientation() {
-        if (SensorManager.getRotationMatrix(rotationMatrix, null, accelValues, magnetValues)) {
-            SensorManager.getOrientation(rotationMatrix, orientationAngles);
 
-            float pitch = (float) Math.toDegrees(orientationAngles[1]); // Rotation around X-axis
-            float roll = (float) Math.toDegrees(orientationAngles[2]); // Rotation around Y-axis
-            float yaw = (float) Math.toDegrees(orientationAngles[0]); // Rotation around Z-axis (compass)
-
-            // Complementary Filter to smooth values
-            final float alpha = 0.98f;
-            filteredPitch = alpha * (filteredPitch + gyroValues[0]) + (1 - alpha) * pitch;
-            filteredRoll = alpha * (filteredRoll + gyroValues[1]) + (1 - alpha) * roll;
-            filteredYaw = alpha * (filteredYaw + gyroValues[2]) + (1 - alpha) * yaw;
-
-            String orientationText = String.format(
-                    "Pitch: %.2f°\nRoll: %.2f°\nYaw: %.2f°",
-                    filteredPitch, filteredRoll, filteredYaw
-            );
-
-            orientationData.setText(orientationText);
-        }
-    }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
         // Not needed for basic gyroscope usage
     }
 
+    public void sendImpulse(Float zRotation,Float xGyro){
+        if(zRotation>=28 && xGyro>0&& isForward==false){
+            Toast.makeText(getApplicationContext(),"sending impulse",Toast.LENGTH_SHORT).show();
+            System.out.println("forward impulse "+zRotation+ " "+ xGyro);
+            isForward = true;
+        }
 
+    }
 
 
 }
