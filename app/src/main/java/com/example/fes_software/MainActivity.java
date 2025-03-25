@@ -22,7 +22,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private float[] accelValues = new float[3];
     private float[] gyroValues = new float[3];
     private boolean isForward=false;
-
+    private boolean isBackward=false;
+    private float Xlastevent;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -158,7 +159,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         float gyroX_deg = gyroValues[0] * (180f / (float) Math.PI);
         float gyroY_deg = gyroValues[1] * (180f / (float) Math.PI);
         float gyroZ_deg = gyroValues[2] * (180f / (float) Math.PI);
-        sendImpulse(gyroZ_deg,gyroValues[0]);
+        sendImpulse(gyroZ_deg,event.values[0],Xlastevent);
+        Xlastevent = event.values[0];
         String dataG = String.format("X: %.2f°\nY: %.2f°\nZ: %.2f°",
                 gyroX_deg, gyroY_deg, gyroZ_deg);
         gyroData.setText(dataG);
@@ -166,9 +168,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         String dataA = String.format("X: %.2f m/s²\nY: %.2f m/s²\nZ: %.2f m/s²",
                 accelValues[0], accelValues[1], accelValues[2]);
         accelerometerData.setText(dataA);
-        String dataB = String.format("X: %.2f rad/s\nY: %.2f rad/s\nZ: %.2f rad/s",
-                gyroValues[0], gyroValues[1], gyroValues[2]);
-        orientationData.setText(dataA);
 
     }
 
@@ -178,14 +177,38 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         // Not needed for basic gyroscope usage
     }
 
-    public void sendImpulse(Float zRotation,Float xGyro){
+    public void sendImpulse(Float zRotation,Float xGyro,Float lastevent){
         if(zRotation>=28 && xGyro>0&& isForward==false){
-            Toast.makeText(getApplicationContext(),"sending impulse",Toast.LENGTH_SHORT).show();
             System.out.println("forward impulse "+zRotation+ " "+ xGyro);
+            orientationData.setText("forward impulse "+zRotation+ " "+ xGyro);
             isForward = true;
+            isBackward = false;
+        }
+        if(zRotation<=-28 && xGyro<0&& isBackward==false){
+            System.out.println("Backward impulse "+zRotation+ " "+ xGyro);
+            orientationData.setText("Backward impulse "+zRotation+ " "+ xGyro);
+
+            isBackward = true;
+            isForward = false;
+        }
+        if(zRotation<28&&zRotation>-28&&(isForward || isBackward)){
+            System.out.println("reset "+zRotation+ " "+ xGyro);
+            orientationData.setText("reset "+zRotation+ " "+ xGyro);
+            isForward=false;
+            isBackward=false;
+        }
+        if((isForward || isBackward)&&(lastevent<0 && xGyro>0 || lastevent>0 && xGyro<0)){
+            System.out.println("STOP "+"Last Event: " + lastevent+ " XGYRO: "+ xGyro+" "+ zRotation);
+            isBackward = false;
+            isForward = false;
+            // stopImpulse();
         }
 
     }
-
+    public void stopImpulse(){
+        System.out.println("STOP");
+        isBackward = false;
+        isForward = false;
+    }
 
 }
