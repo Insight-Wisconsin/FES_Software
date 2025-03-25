@@ -14,16 +14,20 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
     private SensorManager sensorManager;
-    private Sensor gyroscope;
-    private Sensor accelerometer;
-    private TextView accelerometerData;
-    private TextView accelerometerPosition;
-    private TextView gyroData;
-    private int height;
-    private int weight;
+    private Sensor accelerometer, gyroscope, magnetometer;
+    private TextView accelerometerData, gyroData, orientationData;
+    private int height,weight;
     private long lastTimestamp = 0;
-    private float velocityX = 0, velocityY = 0, velocityZ = 0;
-    private float positionX = 0, positionY = 0, positionZ = 0;
+    private float[] accelValues = new float[3];
+    private float[] magnetValues = new float[3];
+    private float[] gyroValues = new float[3];
+
+    private float[] rotationMatrix = new float[9];
+    private float[] orientationAngles = new float[3];
+    private float[] gyroRotation = new float[3]; // Store integrated gyro values
+
+    private float filteredPitch = 0, filteredRoll = 0, filteredYaw = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,21 +76,30 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         setContentView(R.layout.activity_main);
         TextView WeightNumber = (TextView) findViewById(R.id.textViewWeight);
         TextView HeightNumber = (TextView) findViewById(R.id.textViewHeight);
+
         HeightNumber.setText(String.valueOf(height));
         WeightNumber.setText(String.valueOf(weight));
+
         gyroData = (TextView) findViewById(R.id.gyroData);
         accelerometerData = (TextView) findViewById(R.id.accelerometerData);
-        accelerometerPosition =(TextView) findViewById(R.id.AccelerometerPosition);
+        orientationData = findViewById(R.id.orientationData);
+
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
-        accelerometer= sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
-       Button edit = findViewById(R.id.Edit);
+        accelerometer= sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        magnetometer = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+
+        Button edit = findViewById(R.id.Edit);
         if (gyroscope == null) {
             gyroData.setText("Gyroscope not available");
         }
         if(accelerometer==null){
             accelerometerData.setText("Accelerometer not available");
         }
+        if (magnetometer != null) {
+            sensorManager.registerListener(this, magnetometer, SensorManager.SENSOR_DELAY_UI);
+        }
+
         edit.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v){
@@ -94,6 +107,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
         });
 
+        Button AngleReset = findViewById(R.id.AngleReset);
+
+        AngleReset.setOnClickListener(new View.OnClickListener(){
+         @Override
+         public void onClick(View v){
+                gyroValues[0]=0;
+                gyroValues[1]=0;
+                gyroValues[2]=0;
+            }
+        });
         onResume();
     }
     @Override
@@ -105,47 +128,69 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if (accelerometer != null) {
             sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
         }
+        if (accelerometer != null) {
+            sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
+        }
 
 
     }
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
-            float x = event.values[0]; // Rotation around X-axis
-            float y = event.values[1]; // Rotation around Y-axis
-            float z = event.values[2]; // Rotation around Z-axis
-
-            String dataG = String.format("X: %.2f rad/s\nY: %.2f rad/s\nZ: %.2f rad/s", x, y, z);
-            gyroData.setText(dataG);
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            System.arraycopy(event.values, 0, accelValues, 0, event.values.length);
+            updateOrientation();
         }
-        if (event.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION) {
-            float x = event.values[0]; // Rotation around X-axis
-            float y = event.values[1]; // Rotation around Y-axis
-            float z = event.values[2]; // Rotation around Z-axis
+        else if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
+            System.arraycopy(event.values, 0, magnetValues, 0, event.values.length);
+            updateOrientation();
+        }
+        else if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
+            if (lastTimestamp != 0) {
+                float dt = (event.timestamp - lastTimestamp) / 1_000_000_000.0f; // Convert ns to seconds
 
-            String dataA = String.format("X: %.2f m/s^2\nY: %.2f m/s^2\nZ: %.2f m/s^2", x, y, z);
-            accelerometerData.setText(dataA);
+                gyroValues[0] += event.values[0] * dt; // Integrate X rotation
+                gyroValues[1] += event.values[1] * dt; // Integrate Y rotation
+                gyroValues[2] += event.values[2] * dt; // Integrate Z rotation
+            }
+            lastTimestamp = event.timestamp;
+        }
 
-            long currentTime = event.timestamp;
-            float deltaTime = (lastTimestamp == 0) ? 0 : (currentTime - lastTimestamp) / 1_000_000_000.0f;
-            lastTimestamp = currentTime;
+        float gyroX_deg = gyroValues[0] * (180f / (float) Math.PI);
+        float gyroY_deg = gyroValues[1] * (180f / (float) Math.PI);
+        float gyroZ_deg = gyroValues[2] * (180f / (float) Math.PI);
 
-            // Integrate acceleration to velocity
-            velocityX += x * deltaTime;
-            velocityY += y * deltaTime;
-            velocityZ += z * deltaTime;
+        String dataG = String.format("X: %.2f°\nY: %.2f°\nZ: %.2f°",
+                gyroX_deg, gyroY_deg, gyroZ_deg);
+        gyroData.setText(dataG);
 
-            // Integrate velocity to position
-            positionX += velocityX * deltaTime;
-            positionY += velocityY * deltaTime;
-            positionZ += velocityZ * deltaTime;
-            String dataB = String.format(
-                    "X: %.2f m\nY: %.2f m\nZ: %.2f m",
-                    positionX, positionY, positionZ
+        String dataA = String.format("X: %.2f m/s²\nY: %.2f m/s²\nZ: %.2f m/s²",
+                accelValues[0], accelValues[1], accelValues[2]);
+        accelerometerData.setText(dataA);
+
+    }
+    private void updateOrientation() {
+        if (SensorManager.getRotationMatrix(rotationMatrix, null, accelValues, magnetValues)) {
+            SensorManager.getOrientation(rotationMatrix, orientationAngles);
+
+            float pitch = (float) Math.toDegrees(orientationAngles[1]); // Rotation around X-axis
+            float roll = (float) Math.toDegrees(orientationAngles[2]); // Rotation around Y-axis
+            float yaw = (float) Math.toDegrees(orientationAngles[0]); // Rotation around Z-axis (compass)
+
+            // Complementary Filter to smooth values
+            final float alpha = 0.98f;
+            filteredPitch = alpha * (filteredPitch + gyroValues[0]) + (1 - alpha) * pitch;
+            filteredRoll = alpha * (filteredRoll + gyroValues[1]) + (1 - alpha) * roll;
+            filteredYaw = alpha * (filteredYaw + gyroValues[2]) + (1 - alpha) * yaw;
+
+            String orientationText = String.format(
+                    "Pitch: %.2f°\nRoll: %.2f°\nYaw: %.2f°",
+                    filteredPitch, filteredRoll, filteredYaw
             );
-            accelerometerPosition.setText(dataB);
+
+            orientationData.setText(orientationText);
         }
     }
+
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
         // Not needed for basic gyroscope usage

@@ -67,10 +67,10 @@
         android:orientation="horizontal">
 
         <TextView
-            android:layout_width="135dp"
+            android:layout_width="62dp"
             android:layout_height="wrap_content"
             android:layout_margin="10sp"
-            android:text="Gyro"
+            android:text="Angle"
             android:textSize="20sp" />
 
         <TextView
@@ -81,6 +81,13 @@
             android:layout_weight="1"
             android:text="-"
             android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/AngleReset"
+            android:layout_width="2dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Reset" />
 
     </LinearLayout>
 
@@ -116,11 +123,11 @@
             android:layout_width="135dp"
             android:layout_height="wrap_content"
             android:layout_margin="10sp"
-            android:text="Gyro Graph"
+            android:text="Orientation"
             android:textSize="20sp" />
 
         <TextView
-            android:id="@+id/gyrograph"
+            android:id="@+id/orientationData"
             android:layout_width="wrap_content"
             android:layout_height="122dp"
             android:layout_margin="10sp"
