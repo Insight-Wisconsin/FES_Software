@@ -5,6 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#FFFFFF"
     android:orientation="vertical"
     tools:context=".MainActivity">
 
@@ -17,11 +18,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10sp"
-            android:text="Current Height"
+            android:text="Man?"
             android:textSize="20sp" />
 
         <TextView
-            android:id="@+id/textViewHeight"
+            android:id="@+id/textViewMale"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10sp"
@@ -47,11 +48,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10sp"
-            android:text="Current Weight"
+            android:text="ShoeSize"
             android:textSize="20sp" />
 
         <TextView
-            android:id="@+id/textViewWeight"
+            android:id="@+id/textViewShoesize"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10sp"

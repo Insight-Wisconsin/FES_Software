@@ -21,22 +21,23 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10sp"
-            android:text="Height"
+            android:text="Gender?"
             android:textSize="20sp" />
 
-        <EditText
-            android:id="@+id/Height"
-            android:layout_width="201dp"
-            android:layout_height="69dp"
-            android:layout_margin="10sp"
-            android:hint="Enter Text Here" />
+        <Button
+            android:id="@+id/maleButton"
+            android:layout_width="166dp"
+            android:layout_height="97dp"
+            android:gravity="center"
+            android:text="male" />
 
         <Button
-            android:id="@+id/HeightButton"
+            android:id="@+id/femaleButton"
             android:layout_width="95dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
             android:gravity="center"
-            android:text="Click Here" />
+            android:text="female" />
 
     </LinearLayout>
 

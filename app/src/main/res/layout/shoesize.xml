@@ -21,18 +21,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10sp"
-            android:text="Weight"
+            android:text="Shoesize"
             android:textSize="20sp" />
 
         <EditText
-            android:id="@+id/Weight"
+            android:id="@+id/shoesize"
             android:layout_width="198dp"
             android:layout_height="67dp"
             android:layout_margin="10sp"
             android:hint="Enter Text Here" />
 
         <Button
-            android:id="@+id/WeightButton"
+            android:id="@+id/shoesizeButton"
             android:layout_width="95dp"
             android:layout_height="wrap_content"
             android:gravity="center"

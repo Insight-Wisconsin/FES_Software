@@ -1,5 +1,6 @@
 package com.example.fes_software;
 
+import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -8,77 +9,100 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+
 import androidx.appcompat.app.AppCompatActivity;
-import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
     private SensorManager sensorManager;
     private Sensor accelerometer, gyroscope;
-    private TextView accelerometerData, gyroData,orientationData;
-    private int height,weight;
+
+    private LinearLayout relativeLayout;
+    private TextView accelerometerData, gyroData,orientationData,AccelerometerPosition;
+    private boolean man;
+    private double shoesize;
     private long lastTimestamp = 0;
     private float[] accelValues = new float[3];
     private float[] gyroValues = new float[3];
     private boolean isForward=false;
     private boolean isBackward=false;
     private float Xlastevent;
+    private boolean Impulse;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        HeightLayout();
+        GenderLayout();
 
     }
 
-    protected void HeightLayout(){
-        setContentView(R.layout.height);
-        Button Heightbutton = findViewById(R.id.HeightButton);
-        EditText HeighteditText = findViewById(R.id.Height);
-        TextView error = findViewById(R.id.error);
-        Heightbutton.setOnClickListener(new View.OnClickListener() {
+    protected void GenderLayout(){
+        setContentView(R.layout.gender);
+        Button malebutton = findViewById(R.id.maleButton);
+        Button femalebutton = findViewById(R.id.femaleButton);
+        malebutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v){
-                String text = HeighteditText.getText().toString();
-                try{
-                    height = Integer.parseInt(text);
-                    WeightLayout();
-                }catch(Exception e){
-                    error.setText("not a number");
-                }
+
+                    man=true;
+                shoesizeLayout();
+
+
+            }
+        });
+        femalebutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v){
+
+                man=false;
+                shoesizeLayout();
+
+
             }
         });
     }
-    protected void WeightLayout(){
-        setContentView(R.layout.weight);
-        Button Weightbutton = findViewById(R.id.WeightButton);
-        EditText WeighteditText = findViewById(R.id.Weight);
+    protected void shoesizeLayout(){
+        setContentView(R.layout.shoesize);
+        Button Weightbutton = findViewById(R.id.shoesizeButton);
+        EditText WeighteditText = findViewById(R.id.shoesize);
         TextView error = findViewById(R.id.error);
         Weightbutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v){
                 String text = WeighteditText.getText().toString();
+
                 try{
-                    weight = Integer.parseInt(text);
+                    shoesize = Double.parseDouble(text);
                     mainLayout();
                 }catch(Exception e){
-                    error.setText("not a number");
+                    error.setText(e.getMessage());
+
                 }
+
+
+
             }
         });
     }
 
     protected void mainLayout(){
         setContentView(R.layout.activity_main);
-        TextView WeightNumber = (TextView) findViewById(R.id.textViewWeight);
-        TextView HeightNumber = (TextView) findViewById(R.id.textViewHeight);
+        relativeLayout = (LinearLayout) findViewById(R.id.main);
+        TextView male = (TextView) findViewById(R.id.textViewMale);
+        TextView ShoesizeNumber = (TextView) findViewById(R.id.textViewShoesize);
+        if(man) {
+            male.setText("True");
+        }else{
+            male.setText("False");
 
-        HeightNumber.setText(String.valueOf(height));
-        WeightNumber.setText(String.valueOf(weight));
+        }
+        ShoesizeNumber.setText(String.valueOf(shoesize));
 
         gyroData = (TextView) findViewById(R.id.gyroData);
         accelerometerData = (TextView) findViewById(R.id.accelerometerData);
         orientationData = (TextView) findViewById(R.id.orientationData);
+        AccelerometerPosition = (TextView) findViewById(R.id.AccelerometerPosition);
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
@@ -96,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         edit.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v){
-            HeightLayout();
+            GenderLayout();
         }
         });
 
@@ -183,6 +207,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             orientationData.setText("forward impulse "+zRotation+ " "+ xGyro);
             isForward = true;
             isBackward = false;
+            Impulse = true;
         }
         if(zRotation<=-28 && xGyro<0&& isBackward==false){
             System.out.println("Backward impulse "+zRotation+ " "+ xGyro);
@@ -190,25 +215,26 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             isBackward = true;
             isForward = false;
+            Impulse= true;
         }
-        if(zRotation<28&&zRotation>-28&&(isForward || isBackward)){
+        if(zRotation<28&&zRotation>-28&&(Impulse)){
             System.out.println("reset "+zRotation+ " "+ xGyro);
             orientationData.setText("reset "+zRotation+ " "+ xGyro);
+            AccelerometerPosition.setText("no impluse");
+            relativeLayout.setBackgroundColor(Color.parseColor("#FFFFFF"));
             isForward=false;
             isBackward=false;
-        }
-        if((isForward || isBackward)&&(lastevent<0 && xGyro>0 || lastevent>0 && xGyro<0)){
-            System.out.println("STOP "+"Last Event: " + lastevent+ " XGYRO: "+ xGyro+" "+ zRotation);
+            Impulse = false;
+      }
+        if(Impulse){
+            System.out.println("Impluse is being sent");
+            AccelerometerPosition.setText("Impluse is being sent");
+            relativeLayout.setBackgroundColor(Color.parseColor("#8BC34A"));
             isBackward = false;
             isForward = false;
             // stopImpulse();
         }
 
-    }
-    public void stopImpulse(){
-        System.out.println("STOP");
-        isBackward = false;
-        isForward = false;
     }
 
 }
