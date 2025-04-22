@@ -5,6 +5,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.widget.Button;
 import android.view.View;
@@ -30,6 +31,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private boolean isBackward=false;
     private float Xlastevent;
     private boolean Impulse;
+
+    private MediaPlayer mediaPlayer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -150,6 +154,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             }
         });
 
+        mediaPlayer = MediaPlayer.create(this, R.raw.impulse);
+        mediaPlayer.setLooping(true); // So it loops during the impulse
+
         onResume();
     }
     @Override
@@ -201,40 +208,50 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         // Not needed for basic gyroscope usage
     }
 
-    public void sendImpulse(Float zRotation,Float xGyro,Float lastevent){
-        if(zRotation>=28 && xGyro>0&& isForward==false){
-            System.out.println("forward impulse "+zRotation+ " "+ xGyro);
-            orientationData.setText("forward impulse "+zRotation+ " "+ xGyro);
+    public void sendImpulse(Float zRotation, Float xGyro, Float lastevent) {
+        if (zRotation >= 28 && xGyro > 0 && !isForward) {
+            orientationData.setText("forward impulse " + zRotation + " " + xGyro);
             isForward = true;
             isBackward = false;
             Impulse = true;
         }
-        if(zRotation<=-28 && xGyro<0&& isBackward==false){
-            System.out.println("Backward impulse "+zRotation+ " "+ xGyro);
-            orientationData.setText("Backward impulse "+zRotation+ " "+ xGyro);
-
+        if (zRotation <= -28 && xGyro < 0 && !isBackward) {
+            orientationData.setText("Backward impulse " + zRotation + " " + xGyro);
             isBackward = true;
             isForward = false;
-            Impulse= true;
-        }
-        if(zRotation<28&&zRotation>-28&&(Impulse)){
-            System.out.println("reset "+zRotation+ " "+ xGyro);
-            orientationData.setText("reset "+zRotation+ " "+ xGyro);
-            AccelerometerPosition.setText("no impluse");
-            relativeLayout.setBackgroundColor(Color.parseColor("#FFFFFF"));
-            isForward=false;
-            isBackward=false;
-            Impulse = false;
-      }
-        if(Impulse){
-            System.out.println("Impluse is being sent");
-            AccelerometerPosition.setText("Impluse is being sent");
-            relativeLayout.setBackgroundColor(Color.parseColor("#8BC34A"));
-            isBackward = false;
-            isForward = false;
-            // stopImpulse();
+            Impulse = true;
         }
 
+        if (zRotation < 28 && zRotation > -28 && Impulse) {
+            orientationData.setText("reset " + zRotation + " " + xGyro);
+            AccelerometerPosition.setText("no impulse");
+            relativeLayout.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            isForward = false;
+            isBackward = false;
+            Impulse = false;
+
+            if (mediaPlayer.isPlaying()) {
+                mediaPlayer.pause();
+                mediaPlayer.seekTo(0);
+            }
+        }
+
+        if (Impulse) {
+            AccelerometerPosition.setText("Impulse is being sent");
+            relativeLayout.setBackgroundColor(Color.parseColor("#8BC34A"));
+
+            if (!mediaPlayer.isPlaying()) {
+                mediaPlayer.start();
+            }
+        }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
+    }
 }
